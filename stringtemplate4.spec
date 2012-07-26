@@ -2,7 +2,7 @@
 
 Name:      stringtemplate4
 Version:   4.0.4
-Release:   2%{?dist}
+Release:   3%{?dist}
 Summary:   A Java template engine
 URL:       http://www.stringtemplate.org/
 Source0:   http://www.stringtemplate.org/download/%{pkgname}-%{version}-src.zip
@@ -19,6 +19,8 @@ BuildArch: noarch
 BuildRequires: ant-antlr3, ant-junit
 BuildRequires: antlr3
 BuildRequires: stringtemplate
+# yup...it needs itself...
+BuildRequires: stringtemplate4
 # Standard deps
 BuildRequires: java-devel >= 1:1.6.0
 BuildRequires: jpackage-utils
@@ -56,9 +58,11 @@ ln -sf $(build-classpath ant/ant-antlr3) lib/ant-antlr3.jar
 
 sed -i \
 's:location="${ant-antlr3.jar}":location="/usr/share/java/antlr3-runtime.jar":' build.xml
+sed -i 's:<path id="classpath">:<path id="classpath">\n<pathelement location="'\
+$(build-classpath stringtemplate4)'"/>:' build.xml
 
 %build
-export CLASSPATH="`build-classpath ant/ant-antlr3 antlr3 antlr3-runtime antlr stringtemplate`"
+export CLASSPATH="`build-classpath ant/ant-antlr3 antlr3 antlr3-runtime antlr`"
 ant build-jar
 
 %javadoc -d javadoc -public `find build/src build/gen -name '*.java'`
@@ -69,7 +73,7 @@ install -D dist/ST-%{version}.jar \
 
 
 install -Dpm 644 pom.xml %{buildroot}%{_mavenpomdir}/JPP-%{name}.pom
-%add_maven_depmap JPP-%{name}.pom %{name}.jar
+%add_maven_depmap
 
 mkdir -p %{buildroot}%{_javadocdir}/%{name}
 cp -pr javadoc/* %{buildroot}%{_javadocdir}/%{name}/
@@ -86,6 +90,10 @@ cp -pr javadoc/* %{buildroot}%{_javadocdir}/%{name}/
 %{_javadocdir}/%{name}
 
 %changelog
+* Thu Jul 26 2012 Stanislav Ochotnicky <sochotnicky@redhat.com> - 4.0.4-3
+- Fix build. stringtemplate4 now needs itself to build so add it to
+  classpath
+
 * Sat Jul 21 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 4.0.4-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
 
