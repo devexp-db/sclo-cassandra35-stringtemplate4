@@ -2,7 +2,7 @@
 
 Name:      stringtemplate4
 Version:   4.0.4
-Release:   3%{?dist}
+Release:   4%{?dist}
 Summary:   A Java template engine
 URL:       http://www.stringtemplate.org/
 Source0:   http://www.stringtemplate.org/download/%{pkgname}-%{version}-src.zip
@@ -68,11 +68,13 @@ ant build-jar
 %javadoc -d javadoc -public `find build/src build/gen -name '*.java'`
 
 %install
-install -D dist/ST-%{version}.jar \
-    %{buildroot}%{_datadir}/java/%{name}.jar
+install -d -m 755 %{buildroot}%{_javadir}
+install -p -m 644 dist/ST-%{version}.jar \
+    %{buildroot}%{_javadir}/%{name}.jar
 
 
-install -Dpm 644 pom.xml %{buildroot}%{_mavenpomdir}/JPP-%{name}.pom
+install -d -m 755 %{buildroot}%{_mavenpomdir}
+install -p -m 644 pom.xml %{buildroot}%{_mavenpomdir}/JPP-%{name}.pom
 %add_maven_depmap
 
 mkdir -p %{buildroot}%{_javadocdir}/%{name}
@@ -90,6 +92,9 @@ cp -pr javadoc/* %{buildroot}%{_javadocdir}/%{name}/
 %{_javadocdir}/%{name}
 
 %changelog
+* Tue Aug  7 2012 Mikolaj Izdebski <mizdebsk@redhat.com> - 4.0.4-4
+- Fix file permissions
+
 * Thu Jul 26 2012 Stanislav Ochotnicky <sochotnicky@redhat.com> - 4.0.4-3
 - Fix build. stringtemplate4 now needs itself to build so add it to
   classpath
