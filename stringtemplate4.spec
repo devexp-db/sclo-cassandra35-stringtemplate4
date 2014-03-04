@@ -2,7 +2,7 @@
 
 Name:      stringtemplate4
 Version:   4.0.4
-Release:   6%{?dist}
+Release:   7%{?dist}
 Summary:   A Java template engine
 URL:       http://www.stringtemplate.org/
 Source0:   http://www.stringtemplate.org/download/%{pkgname}-%{version}-src.zip
@@ -24,7 +24,7 @@ BuildRequires: stringtemplate4
 # Standard deps
 BuildRequires: java-devel >= 1:1.6.0
 BuildRequires: jpackage-utils
-Requires:      java >= 1:1.6.0
+Requires:      java-headless >= 1:1.6.0
 Requires:      jpackage-utils
 
 %description
@@ -92,6 +92,9 @@ cp -pr javadoc/* %{buildroot}%{_javadocdir}/%{name}/
 %{_javadocdir}/%{name}
 
 %changelog
+* Tue Mar 04 2014 Stanislav Ochotnicky <sochotnicky@redhat.com> - 4.0.4-7
+- Use Requires: java-headless rebuild (#1067528)
+
 * Sun Aug 04 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 4.0.4-6
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
 
