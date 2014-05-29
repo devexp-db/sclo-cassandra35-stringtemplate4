@@ -2,7 +2,7 @@
 
 Name:      stringtemplate4
 Version:   4.0.4
-Release:   7%{?dist}
+Release:   8%{?dist}
 Summary:   A Java template engine
 URL:       http://www.stringtemplate.org/
 Source0:   http://www.stringtemplate.org/download/%{pkgname}-%{version}-src.zip
@@ -81,17 +81,17 @@ mkdir -p %{buildroot}%{_javadocdir}/%{name}
 cp -pr javadoc/* %{buildroot}%{_javadocdir}/%{name}/
 
 
-%files
+%files -f .mfiles
 %doc LICENSE.txt README.txt
-%{_datadir}/java/%{name}.jar
-%{_mavenpomdir}/JPP-%{name}.pom
-%{_mavendepmapfragdir}/%{name}
 
 %files javadoc
 %doc LICENSE.txt
 %{_javadocdir}/%{name}
 
 %changelog
+* Thu May 29 2014 Mikolaj Izdebski <mizdebsk@redhat.com> - 4.0.4-8
+- Use .mfiles generated during build
+
 * Tue Mar 04 2014 Stanislav Ochotnicky <sochotnicky@redhat.com> - 4.0.4-7
 - Use Requires: java-headless rebuild (#1067528)
 
