@@ -2,7 +2,7 @@
 
 Name:      stringtemplate4
 Version:   4.0.4
-Release:   8%{?dist}
+Release:   9%{?dist}
 Summary:   A Java template engine
 URL:       http://www.stringtemplate.org/
 Source0:   http://www.stringtemplate.org/download/%{pkgname}-%{version}-src.zip
@@ -89,6 +89,9 @@ cp -pr javadoc/* %{buildroot}%{_javadocdir}/%{name}/
 %{_javadocdir}/%{name}
 
 %changelog
+* Sun Jun 08 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 4.0.4-9
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
+
 * Thu May 29 2014 Mikolaj Izdebski <mizdebsk@redhat.com> - 4.0.4-8
 - Use .mfiles generated during build
 
