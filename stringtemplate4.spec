@@ -1,6 +1,6 @@
 Name:           stringtemplate4
 Version:        4.0.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A Java template engine
 License:        BSD
 URL:            http://www.stringtemplate.org/
@@ -57,6 +57,9 @@ rm -r test/org/stringtemplate/v4/test/TestEarlyEvaluation.java
 %license LICENSE.txt
 
 %changelog
+* Fri Jun 19 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 4.0.8-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
 * Mon Mar 23 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 4.0.8-1
 - Update to upstream version 4.0.8
 
