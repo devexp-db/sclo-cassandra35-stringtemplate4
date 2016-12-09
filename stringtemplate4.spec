@@ -1,19 +1,36 @@
-Name:           stringtemplate4
-Version:        4.0.8
-Release:        3%{?dist}
-Summary:        A Java template engine
-License:        BSD
-URL:            http://www.stringtemplate.org/
-BuildArch:      noarch
+%{?scl:%scl_package stringtemplate4}
+%{!?scl:%global pkg_name %{name}}
 
-Source0:        https://github.com/antlr/stringtemplate4/archive/%{version}.tar.gz
+%{!?_with_bootstrap: %global bootstrap 0}
 
-BuildRequires:  maven-local
-BuildRequires:  mvn(junit:junit)
-BuildRequires:  mvn(org.antlr:antlr-runtime) >= 3.5.2
-BuildRequires:  mvn(org.antlr:antlr3-maven-plugin) >= 3.5.2
-BuildRequires:  mvn(org.sonatype.oss:oss-parent:pom:)
+Name:		%{?scl_prefix}stringtemplate4
+Version:	4.0.8
+Release:	4%{?dist}
+Summary:	A Java template engine
+License:	BSD
+URL:		http://www.stringtemplate.org/
+Source0:	https://github.com/antlr/%{pkg_name}/archive/%{version}.tar.gz
 
+%if 0%{?bootstrap}
+# generate with:
+# mock -i stringtemplate4
+# (cd `mock -p` && tar cjf $OLDPWD/stringtemplate4-prebuilt.tar.bz2 usr/share/{maven-metadata,java}/stringtemplate4*)
+Source9999:     %{pkg_name}-prebuilt.tar.bz2
+%endif
+
+BuildRequires:	%{?scl_prefix_maven}maven-local
+BuildRequires:	%{?scl_prefix_maven}sonatype-oss-parent
+BuildRequires:	%{?scl_prefix_java_common}junit
+BuildRequires:	%{?scl_prefix}antlr3-tool
+BuildRequires:	%{?scl_prefix}antlr3-java
+BuildRequires:	%{?scl_prefix}stringtemplate
+%{?scl:Requires: %scl_runtime}
+
+%if ! 0%{?bootstrap}
+BuildRequires:  %{?scl_prefix}%{pkg_name}
+%endif
+
+BuildArch:	noarch
 
 %description
 StringTemplate is a java template engine (with ports for
@@ -23,17 +40,36 @@ is particularly good at multi-targeted code generators,
 multiple site skins, and internationalization/localization.
 
 %package javadoc
-Summary:       Javadoc for %{name}
+Summary:	Javadoc for %{name}
 
 %description javadoc
 This package contains javadoc for %{name}.
 
 %prep
-%setup -q
+%setup -q -n %{pkg_name}-%{version}
 
+%if 0%{?bootstrap}
+mkdir bootstrap-repo
+tar xf %{SOURCE9999} -C bootstrap-repo
+sed -i "s:/usr/share/:$PWD/bootstrap-repo&:g" bootstrap-repo/usr/share/maven-metadata/*.xml
+sed -i "/optional/d" bootstrap-repo/usr/share/maven-metadata/*.xml
+mkdir -p .xmvn/config.d
+cat > .xmvn/config.d/bootstrap-config.xml <<EOF
+<configuration>
+<resolverSettings>
+  <metadataRepositories>
+    <repository>$PWD/bootstrap-repo/usr/share/maven-metadata</repository>
+  </metadataRepositories>
+</resolverSettings>
+</configuration>
+EOF
+%endif
+
+%{?scl:scl enable %{scl_maven} %{scl} - << "EOF"}
 %pom_remove_plugin :findbugs-maven-plugin
 %pom_remove_plugin :maven-gpg-plugin
 %pom_remove_plugin :maven-shade-plugin
+%{?scl:EOF}
 
 # Bug, should be reported upstream
 sed -i '/tmpdir =/s,;,+"/"&,' test/org/stringtemplate/v4/test/BaseTest.java
@@ -44,10 +80,14 @@ sed -i /testMissingImportString/s/@Test// test/org/stringtemplate/v4/test/TestGr
 rm -r test/org/stringtemplate/v4/test/TestEarlyEvaluation.java
 
 %build
+%{?scl:scl enable %{scl_maven} %{scl} - << "EOF"}
 %mvn_build
+%{?scl:EOF}
 
 %install
+%{?scl:scl enable %{scl_maven} %{scl} - << "EOF"}
 %mvn_install
+%{?scl:EOF}
 
 %files -f .mfiles
 %doc CHANGES.txt contributors.txt README.txt
@@ -57,6 +97,9 @@ rm -r test/org/stringtemplate/v4/test/TestEarlyEvaluation.java
 %license LICENSE.txt
 
 %changelog
+* Thu Dec 08 2016 Tomas Repik <trepik@redhat.com> - 4.0.8-4
+- scl conversion, bootstrapped
+
 * Fri Feb 05 2016 Fedora Release Engineering <releng@fedoraproject.org> - 4.0.8-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
 
